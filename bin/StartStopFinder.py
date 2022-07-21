@@ -556,7 +556,7 @@ def prepare_output_file(args, codon_dict, gene_dict, genome_seq, match_codons, a
 
 def main():
     # store commandline args
-    parser = argparse.ArgumentParser(description="ORFDetector: Detect ORFs based on TIS and/or TTS data.")
+    parser = argparse.ArgumentParser(description="StartStopFinder: Detect ORFs based on TIS and/or TTS data.")
     parser.add_argument("-f", "--fwd_file", action="store", dest="fwd_wig_file", help="input forward wig file.", required=True)
     parser.add_argument("-r", "--rev_file", action="store", dest="rev_wig_file", help="input reverse wig file.", required=True)
     parser.add_argument("-a", "--annotation_file", action="store", dest="annotation_file", help="input annotation file.", required=True)

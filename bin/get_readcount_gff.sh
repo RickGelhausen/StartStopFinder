@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 
-bam_path="/mnt/datavault/SPP2002/analysis/exp28/bam"
+bam_path=""
 scriptpath="bin"
 input_annotation=""
 output_rawreads=""

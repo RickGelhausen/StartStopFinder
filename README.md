@@ -1,13 +1,15 @@
-# ORFDetector
+# StartStopFinder
 
 Detection of potential start/stop codons based on Translation Initiation Site (TIS) or Translatation Termination Site (TTS) peaks, using a similar concept than the [RETscript for TIS](https://www.sciencedirect.com/science/article/pii/S1097276519301078).
 
 These scripts were created to be used with the metagene-profiling and coverage (.wig) files created by the [HRIBO workflow](https://github.com/RickGelhausen/HRIBO) [[1]](#1).
-Nevertheless, the ORFDetector scripts can also be used with other standard coverage files and metagene-profiling tools.
+Nevertheless, the StartStopFinder scripts can also be used with other standard coverage files and metagene-profiling tools.
 
 # Requirements
 ## Required packages
+
 The scripts used in the analysis exclusively require python3.
+
 Packages required are:
 * pandas
 * numpy
@@ -21,14 +23,15 @@ Packages required are:
 All required packages are easily retrievable via conda.
 
 ```
-conda create -n "ORFDetector" -c bioconda -c conda-forge pysam numpy pandas biopython subread interlap xlrd xlsxwriter
-conda activate ORFDetector
+conda create -n "startstopfinder_env" -c bioconda -c conda-forge pysam numpy pandas biopython subread interlap xlrd xlsxwriter
+conda activate startstopfinder_env
 ```
 
 Alternatively, use the provided `environment.yml`
 
 ```
 conda env create -f environment.yml
+conda activate startstopfinder_env
 ```
 
 ## Required files
@@ -63,7 +66,7 @@ The analysis is done in multiple steps:
 
 5. If the script was used on different RIBO-seq, RNA-seq and TIS or TTS samples, all result tables are bundled into one big excel file, by combining ORFs that have been predicted for multiple samples into one row, providing the `peak_height` information for all involved samples in seperate columns. The excel file contains a lot of additional information for each predicted ORF (e.g. gene_type, start, stop, strand, locus_tag, codon_count, peak_height, 15nt upstream of the start, nucleotide sequence, amino acid sequence, etc...). Contrasts can be given in form of a list of file prefixes (e.g RIBO-A-1_TIS_A-1, RIBO-A-2_TIS_A-1). This will add additional columns with log2foldchanges for the given prefix combinations.
 
-6. (TTS_only) For the TTS predictions, it is hard to find the best start codon matching the predicted stop codon, as multiple start codons can be present in-frame upstream of the predicted stop codon. The method used in `ORFDetector` (step 5) finds the shortest possible ORF, by choosing the first in-frame start-codon. In this step, the longest possible ORF is added to the results for a given predicted stop.
+6. (TTS_only) For the TTS predictions, it is hard to find the best start codon matching the predicted stop codon, as multiple start codons can be present in-frame upstream of the predicted stop codon. The method used in `StartStopFinder` (step 5) finds the shortest possible ORF, by choosing the first in-frame start-codon. In this step, the longest possible ORF is added to the results for a given predicted stop.
 The longest possible ORF for a given stop codon is defined as the ORF formed by the in-frame start codon furthest from the given stop, such that the there is no other in-frame stop codon between the current stop codon and the start codon.
 First, the first in-frame stop codon upstream of the current predicted stop-codon is searched, then the first start-codon downstream of the upstream stop-codon is chosen. This ensures that the detected start-codon is the furthest possible in-frame start-codon that ensures that no additional in-frame stop-codon is between the predicted stop-codon and the attributed start-codon. This provides us with the longest possible ORF.
 For TIS predictions this is not necessary, as we start from the predicted start-codon and look for the first in-frame stop-codon.
@@ -80,7 +83,7 @@ The chosen thresholds, offsets and coverage mappings can change for each organis
 
 # Running the analysis scripts
 The analysis is made up of multiple python3 and bash scripts. If all data is collected as described in the [required files section](#Required-files), running the script will be straight-forward.
-Simply run either `ORFDetector_analysis_TTS.sh` or `ORFDetector_analysis_TIS.sh` depending on the site that is to be analysed.
+Simply run either `StartStopFinder_analysis_TTS.sh` or `StartStopFinder_analysis_TIS.sh` depending on the site that is to be analysed.
 
 The following commandline arguments are required:
 | Name                | Command Line Argument | Description                                                                                                           |
@@ -105,7 +108,7 @@ The following commandline arguments are required:
 ##Examples:
 
 ```
-bash ORFDetector_analysis_TIS.sh -p <path/to/analysis/output> -w <path/to/the/experiment/folder> -s bin(default) -a <path/to/annotation> -g <path/to/genome> -e <path/to/folder/containing/experiment/data> -m threeprime32 -m fiveprime -n raw -n mil -n min -o 17 -o -15 -b <path/to/bam/folder> -c RIBO-A-1_TIS-A-1 -c RIBO-A-2_TIS-A-2 -c TIS-A-1_TIS-A-2 -t <path/to/temporary/files> -r 5(default) -f (postfiltering activated)  -x ATG -x TTG (default ATG,GTG,TTG) -y TAG (default TAG,TAA,TGA)
+bash StartStopFinder_analysis_TIS.sh -p <path/to/analysis/output> -w <path/to/the/experiment/folder> -s bin(default) -a <path/to/annotation> -g <path/to/genome> -e <path/to/folder/containing/experiment/data> -m threeprime32 -m fiveprime -n raw -n mil -n min -o 17 -o -15 -b <path/to/bam/folder> -c RIBO-A-1_TIS-A-1 -c RIBO-A-2_TIS-A-2 -c TIS-A-1_TIS-A-2 -t <path/to/temporary/files> -r 5(default) -f (postfiltering activated)  -x ATG -x TTG (default ATG,GTG,TTG) -y TAG (default TAG,TAA,TGA)
 ```
 
 If you have your own data, you can run the scripts individually, each of them is described in the [scripts section](#Scripts) below.
@@ -113,7 +116,7 @@ If you have your own data, you can run the scripts individually, each of them is
 # Scripts
 This section contains short descriptions of each of the scripts (in execution order) and the commandline parameters. The scripts can be found in the bin folder.
 
-* **ORFDetector.py:** is the main script which uses annotation, genome and wig files to detect potential ORFs using TIS or TTS read coverage peaks.
+* **StartStopFinder.py:** is the main script which uses annotation, genome and wig files to detect potential ORFs using TIS or TTS read coverage peaks.
 
 | Name                 | Command Line Argument | Description                                                                                                           |
 |----------------------|-----------------------|-----------------------------------------------------------------------------------------------------------------------|
@@ -130,11 +133,11 @@ This section contains short descriptions of each of the scripts (in execution or
 | codon_interval_out   | -codon_interval_out   | The output .gff file for the codon intervals which are used to test overlap with a potential codon.                   |
 | output_file          | -o                    | The output .csv file for further processing in the other included scripts.                                            |
 
-* **merge_TTS.py:** merges the .csv files resulting from the `ORFDetector.py` script, for different samples (RIBO-A-1, RIBO-A-2, TIS-A-1, etc...). The merged results are infused with additional information including log2 fold-changes for the different desired contrasts, nucleotide and amino-acid sequences. The resulting information is then written to an excel output file (.xlsx).
+* **merge_TTS.py:** merges the .csv files resulting from the `StartStopFinder.py` script, for different samples (RIBO-A-1, RIBO-A-2, TIS-A-1, etc...). The merged results are infused with additional information including log2 fold-changes for the different desired contrasts, nucleotide and amino-acid sequences. The resulting information is then written to an excel output file (.xlsx).
 
 | Name                 | Command Line Argument | Description                                                                                                   |
 |----------------------|-----------------------|---------------------------------------------------------------------------------------------------------------|
-| tables               | -t/--tables           | A list of .csv tables resulting from `ORFDetector.py` that will be merged                                      |
+| tables               | -t/--tables           | A list of .csv tables resulting from `StartStopFinder.py` that will be merged                                      |
 | contrasts            | --contrasts           | The contrasts used for the experiment. If you want log2FC for certain peak-heights in the table you can use this option to indicate which samples should be compared (e.g. RIBO-A-1_TIS-A-1)|
 | xlsx                 | -x                    | The output excel file                                                                                         |
 
@@ -232,7 +235,7 @@ conda create -n "extramapping" -c bioconda -c conda-forge pandas samtools ucsc-w
 conda activate extramapping
 ```
 
-In addition, it also requires some scripts from `HRIBO` in order to do the mapping. If you do not have an `HRIBO` installation, you can simply download the `mapping.py` script from [GitHub repository](https://github.com/RickGelhausen/HRIBO/blob/master/scripts/mapping.py). (You will also need the `total_mapped_reads.py` script, but this is present in the ORFDetector folder too. Ensure that both scripts are in the same folder.)
+In addition, it also requires some scripts from `HRIBO` in order to do the mapping. If you do not have an `HRIBO` installation, you can simply download the `mapping.py` script from [GitHub repository](https://github.com/RickGelhausen/HRIBO/blob/master/scripts/mapping.py). (You will also need the `total_mapped_reads.py` script, but this is present in the StartStopFinder folder too. Ensure that both scripts are in the same folder.)
 
 | Name                 | Command Line Argument | Description                                                                                                           |
 |----------------------|-----------------------|-----------------------------------------------------------------------------------------------------------------------|

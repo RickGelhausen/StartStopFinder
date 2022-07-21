@@ -59,7 +59,7 @@ for experiment in ${experiments[*]}; do
     for m_i in ${!mappings[@]}; do
         for norm in ${normalizations[*]}; do
             wigpath="$coveragepath/$experiment/${mappings[m_i]}/$norm"
-            respath="$path/ORFBounder_results/TIS/$experiment/${mappings[m_i]}/${offsets[m_i]}/$norm"
+            respath="$path/StartStopFinder_results/TIS/$experiment/${mappings[m_i]}/${offsets[m_i]}/$norm"
             mkdir -p $respath
             mkdir -p $wigpath
 
@@ -81,10 +81,10 @@ for experiment in ${experiments[*]}; do
             uniq_prefix=($(printf "%s\n" "${prefix_list[@]}" | sort -u | tr '\n' ' '))
 
             for sample in ${uniq_prefix[@]}; do
-                python3 $scriptpath/ORFBounder.py --fwd_file $coveragepath/$experiment/${mappings[m_i]}/$norm/$sample.$norm.forward.wig --rev_file $coveragepath/$experiment/${mappings[m_i]}/$norm/$sample.$norm.reverse.wig \
-                                                  --annotation_file $annotationpath --genome_file $genomepath -o $respath/$sample.$norm.csv --target_site TIS --offset ${offsets[m_i]} \
-                                                  --output_gff $respath/$sample.$norm.gff --codon_interval_out $respath/$sample.${norm}_codons.gff -c $readcountthreshold \
-                                                  --start_codons ${start_codons[@]} --stop_codons ${stop_codons[@]}
+                python3 $scriptpath/StartStopFinder.py --fwd_file $coveragepath/$experiment/${mappings[m_i]}/$norm/$sample.$norm.forward.wig --rev_file $coveragepath/$experiment/${mappings[m_i]}/$norm/$sample.$norm.reverse.wig \
+                                                       --annotation_file $annotationpath --genome_file $genomepath -o $respath/$sample.$norm.csv --target_site TIS --offset ${offsets[m_i]} \
+                                                       --output_gff $respath/$sample.$norm.gff --codon_interval_out $respath/$sample.${norm}_codons.gff -c $readcountthreshold \
+                                                       --start_codons ${start_codons[@]} --stop_codons ${stop_codons[@]}
             done
 
             infiles=()
