@@ -1,6 +1,6 @@
 # StartStopFinder
 
-Detection of potential start/stop codons based on Translation Initiation Site (TIS) or Translatation Termination Site (TTS) peaks, using a similar concept than the [RETscript for TIS](https://www.sciencedirect.com/science/article/pii/S1097276519301078).
+Detection of potential start/stop codons based on Translation Initiation Site (TIS) or Translatation Termination Site (TTS) peaks, using a similar concept as the [RETscript for TIS](https://www.sciencedirect.com/science/article/pii/S1097276519301078).
 
 These scripts were created to be used with the metagene-profiling and coverage (.wig) files created by the [HRIBO workflow](https://github.com/RickGelhausen/HRIBO) [[1]](#1).
 Nevertheless, the StartStopFinder scripts can also be used with other standard coverage files and metagene-profiling tools.
